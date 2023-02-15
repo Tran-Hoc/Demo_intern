@@ -22,7 +22,7 @@ namespace Demo_intern.Controllers
         // GET: TimeValues
         public async Task<IActionResult> Index()
         {
-              return View(await _context.TimeValues.ToListAsync());
+            return View(await _context.TimeValues.ToListAsync());
         }
 
 
@@ -31,7 +31,7 @@ namespace Demo_intern.Controllers
         [NoDirectAccess]
         public async Task<IActionResult> CreateOrUpdate(Guid? id)
         {
-            if (id == null)
+            if (id == null || id == Guid.Empty)
                 return View(new TimeValue());
             else
             {
@@ -45,12 +45,12 @@ namespace Demo_intern.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateOrUpdate(Guid id, [Bind("Id, Value")] TimeValue timevalue)
+        public async Task<IActionResult> CreateOrUpdate( [Bind("Id, Value")] TimeValue timevalue, Guid? id)
         {
             if (ModelState.IsValid)
             {
                 //Insert
-                if (id == null)
+                if (id == null || id == Guid.Empty)
                 {
                     timevalue.Time = DateTime.Now;
                     _context.Add(timevalue);
@@ -62,6 +62,7 @@ namespace Demo_intern.Controllers
                 {
                     try
                     {
+                        timevalue.Time = DateTime.Now;
                         _context.Update(timevalue);
                         await _context.SaveChangesAsync();
                     }
@@ -233,14 +234,14 @@ namespace Demo_intern.Controllers
         //    {
         //        _context.TimeValues.Remove(timeValue);
         //    }
-            
+
         //    await _context.SaveChangesAsync();
         //    return RedirectToAction(nameof(Index));
         //}
 
         private bool TimeValueExists(Guid id)
         {
-          return _context.TimeValues.Any(e => e.Id == id);
+            return _context.TimeValues.Any(e => e.Id == id);
         }
     }
 }
